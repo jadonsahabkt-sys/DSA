@@ -11,32 +11,21 @@
 class Solution {
 public:
     ListNode* mergeKLists(vector<ListNode*>& lists) {
-        priority_queue<ListNode*,vector<ListNode*>,Compare>pq;
-        //first node of every list
-        for(ListNode* node: lists){
-            if(node != nullptr){
-                pq.push(node);
-            }
-        }
-        ListNode* dummy = new ListNode(-1);
-        ListNode* tail = dummy;
-        while(!pq.empty()){
-            ListNode* smallest = pq.top();
-            pq.pop();
-            tail->next=smallest;
-            tail = tail->next;
+        auto cmp=[](ListNode* a,ListNode* b){return a->val > b->val;};
+        priority_queue<ListNode*,vector<ListNode*>,decltype(cmp) > pq(cmp);
+        for(ListNode* head : lists)
+           if(head) pq.push(head);
+        ListNode dummy(0);
+        ListNode* tail=&dummy;
 
-            //Add next node from same list
-            if(smallest->next !=nullptr){
-                pq.push(smallest->next);
-            }
+        while(!pq.empty()){
+            ListNode* node=pq.top();
+            pq.pop();
+            tail->next=node;
+            tail=node;
+            if(node->next) pq.push(node->next);
         }
-        return dummy->next;
+          return dummy.next;
+
     }
-    private:
-     struct Compare{
-        bool operator()(ListNode* a,ListNode* b){
-            return a->val > b->val;
-        }
-     };
 };
